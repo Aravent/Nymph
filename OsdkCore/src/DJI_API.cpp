@@ -7,18 +7,20 @@
  *
  *  @copyright 2016 DJI. All right reserved.
  *
+ *  @AnyCen chang. for AirDwing Nymph.
+ *
  */
 
 #include "DJI_API.h"
 #include <string.h>
-#include <anyh.h>
+#include <anyh.h>   //引用此文件主要用于串口的初始化以及CAN协议的引用
 
 using namespace DJI;
 using namespace DJI::onboardSDK;
 
 /*---------------AirDwing HX Switch-----------------------------------*/
-uint16_t Dyhx_Open[9]={0xFF, 0x01, 0x96, 0x40, 0x00, 0x00, 0x00, 0x00, 0x29};
-uint16_t Dyhx_Close[9]={0xFF, 0x01, 0x96, 0x41, 0x00, 0x00, 0x00, 0x00, 0x28};
+uint16_t Dyhx_Open[9]={0xFF, 0x01, 0x96, 0x40, 0x00, 0x00, 0x00, 0x00, 0x29};   //虎嗅泵开启指令
+uint16_t Dyhx_Close[9]={0xFF, 0x01, 0x96, 0x41, 0x00, 0x00, 0x00, 0x00, 0x28};  //虎嗅泵关闭指令
 /*---------------AirDwing HX Switch-----------------------------------*/
 
 #ifdef USE_ENCRYPT
@@ -1186,7 +1188,7 @@ CoreAPI::parseFromMobileCallback(CoreAPI* api, Header* protocolHeader,
         break;
     }
   }
-	else
+	else//此处用于接收从MSDK接收到的信息
 	{
 		int mobile_data_len = protocolHeader->length - EXC_DATA_SIZE;
 		for(int ssd=0;ssd<(mobile_data_len-2);ssd++)
@@ -1197,16 +1199,16 @@ CoreAPI::parseFromMobileCallback(CoreAPI* api, Header* protocolHeader,
 		{
 			for(int w=0;w<9;w++)
 			{
-				USART_SendData(USART2, Dyhx_Open[w]);//�򴮿�1��������
-				while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);//�ȴ����ͽ���
+				USART_SendData(USART2, Dyhx_Open[w]);//向串口1发送虎嗅泵打开指令
+				while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);//等待发送完成
 			}
 		}
     else if(mobile_data_t[2]==9)
 		{
 			for(int w=0;w<9;w++)
 			{
-				USART_SendData(USART2, Dyhx_Close[w]);//�򴮿�1��������
-				while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);//�ȴ����ͽ���
+				USART_SendData(USART2, Dyhx_Close[w]);//向串口1发送虎嗅关闭指令
+				while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);//等待发送完成
 			}
 		}
 	}
