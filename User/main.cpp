@@ -5,7 +5,7 @@
 
 #include "main.h"
 #include "anyh.h"
-#include "bmp.h"
+#include "bmp.h"//å¼•ç”¨å›¾åƒæ–‡ä»¶
 
 
 #undef USE_ENCRYPT
@@ -30,22 +30,22 @@ extern uint8_t myFreq[16];
 		
 /*----------------------AirDwing VARIABLE----------------------------*/
 		
-char can_cache[255];
-uint8_t mobile_data_send[100];	
-uint16_t mobile_data_t[100];		
+char can_cache[255];            //canæ•°æ®ç¼“å†²
+uint8_t mobile_data_send[100];	//æ•°æ®é€ä¼  OSDK->MSDK
+uint16_t mobile_data_t[100];		//æ•°æ®é€ä¼  MSDK->OSDK
 		
 		
-int	flag_error_getDroneVersion = 0;
-int flag_testsend = 0;
+int	flag_error_getDroneVersion = 0; //æ— æ³•è·å–é£è¡Œå™¨ç‰ˆæœ¬æ ‡å¿—ä½ï¼ˆä¸€èˆ¬ç”¨äºæœªè¿æ¥é£è¡Œå™¨ï¼‰
+int flag_testsend = 0;              //è§¦å‘å‘é€æ ‡å¿—ä½
 		
-int co;
+int co;    //ä¼ æ„Ÿå™¨æ˜¾ç¤ºæ¨¡å—ï¼ˆæš‚å­˜ï¼‰
 int so2;
 int o3;
 int no2;
 int pm25;
 int pm10;
 		
-//CRCÂë±í
+//CRCç è¡¨
 static const uint32_t crc32tab[] = {
 	0x00000000L, 0x77073096L, 0xee0e612cL, 0x990951baL,
 	0x076dc419L, 0x706af48fL, 0xe963a535L, 0x9e6495a3L,
@@ -113,7 +113,7 @@ static const uint32_t crc32tab[] = {
 	0xb40bbe37L, 0xc30c8ea1L, 0x5a05df1bL, 0x2d02ef8dL 
 };
  
-uint32_t crc32(char *buf, uint32_t size)//CRC¼ÆËã
+uint32_t crc32(char *buf, uint32_t size)//CRCè®¡ç®—æ ¡éªŒ
 {
 	uint32_t i, crc;
 	crc = 0xFFFFFFFF;
@@ -122,7 +122,7 @@ uint32_t crc32(char *buf, uint32_t size)//CRC¼ÆËã
 	return crc^0xFFFFFFFF;
 }			
 		
-int nymth()//NymphĞ­Òé½âÎö·â×°
+int nymth()//Nymphåè®®è§£æå°è£…
 {
 	char stx[3],Dstx[3]="FE";
 	char len[4];
@@ -133,98 +133,98 @@ int nymth()//NymphĞ­Òé½âÎö·â×°
 	char eof[3],Deof[3]="FD";
 	char data[512];
 	
-	strncpy(stx, can_cache, 2);//ÅĞ¶ÏĞ­ÒéÍ·
-	printf("Ğ­ÒéÍ·£º%s\n",stx);
+	strncpy(stx, can_cache, 2);//åˆ¤æ–­åè®®å¤´
+	printf("åè®®å¤´%s\n",stx);
 	if(strcmp(stx,Dstx)==0)
 	{
-		 strncpy(len, can_cache+2, 3);//ÌáÈ¡Êı¾İ³¤¶È
-		 printf("Êı¾İ³¤¶È£¨×Ö·û´®£©£º%s\n",len);
-		 long ss = atoi(len);//×ª»»ÎªÕûĞÎ±äÁ¿ÓÃÓÚ½ÓÏÂÀ´µÄ×Ö³¤¼ÆËã
-		 printf("Êı¾İ³¤¶È£¨ÕûĞÍ£©£º%d\n",ss);
+		 strncpy(len, can_cache+2, 3);//æå–æ•°æ®é•¿åº¦
+		 printf("æ•°æ®é•¿åº¦ï¼ˆå­—ç¬¦ä¸²ï¼‰ï¼š%s\n",len);
+		 long ss = atoi(len);//è½¬æ¢ä¸ºæ•´å½¢å˜é‡ç”¨äºæ¥ä¸‹æ¥çš„å­—é•¿è®¡ç®—
+		 printf("æ•°æ®é•¿åº¦ï¼ˆæ•´å½¢ï¼‰ï¼š%d\n",ss);
 
-		 strncpy(sat, can_cache+5, 3);//ÌáÈ¡×´Ì¬Âë
+		 strncpy(sat, can_cache+5, 3);//æå–çŠ¶æ€ç 
 		 if(strcmp(sat,Dsat_1)==0)
 		 {
-				 printf("×´Ì¬Âë£ºÖ÷»úÆô¶¯\n");
+				 printf("çŠ¶æ€ç ï¼šä¸»æœºå¯åŠ¨\n");
 		 }
 		 else if(strcmp(sat,Dsat_2)==0)
 		 {
-				 printf("×´Ì¬Âë£ºÉêÇë¿ØÖÆ\n");
+				 printf("çŠ¶æ€ç ï¼šç”³è¯·æ§åˆ¶\n");
 		 }
 		 else if(strcmp(sat,Dsat_3)==0)
 		 {
-				 printf("×´Ì¬Âë£ºÍâÉè×ª·¢\n");
+				 printf("çŠ¶æ€ç ï¼šå¤–è®¾è½¬å‘\n");
 		 }
 		 else if(strcmp(sat,Dsat_4)==0)
 		 {
-				 printf("×´Ì¬Âë£ºÍâÉèÏÔÊ¾\n");
+				 printf("çŠ¶æ€ç ï¼šå¤–è®¾æ˜¾ç¤º\n");
 		 }
 		 else if(strcmp(sat,Dsat_5)==0)
 		 {
-				 printf("×´Ì¬Âë£º·µ»Ø×¢²á\n");
+				 printf("çŠ¶æ€ç ï¼šè¿”å›æ³¨å†Œ\n");
 		 }
 		 else if(strcmp(sat,Dsat_6)==0)
 		 {
-				 printf("×´Ì¬Âë£º·µ»Ø¿ØÖÆ\n");
+				 printf("çŠ¶æ€ç ï¼šè¿”å›æ§åˆ¶\n");
 		 }
 		 else if(strcmp(sat,Dsat_7)==0)
 		 {
-				 printf("×´Ì¬Âë£º·¢ËÍ¿ØÖÆ\n");
+				 printf("çŠ¶æ€ç ï¼šå‘é€æ§åˆ¶\n");
 		 }
 		 else
 		 {
-				 printf("×´Ì¬Âë´íÎó£¡\n");
+				 printf("çŠ¶æ€ç é”™è¯¯ï¼\n");
 		 }
 
-		 strncpy(sid, can_cache+8, 2);//ÌáÈ¡Éè±¸ID
+		 strncpy(sid, can_cache+8, 2);//æå–è®¾å¤‡ID
 		 if(strcmp(sid,Dsid)==0)
 		 {
-				printf("Éè±¸ID£ºÖ÷»ú·¢ËÍ\n");
+				printf("è®¾å¤‡IDï¼šä¸»æœºå‘é€\n");
 		 }
 		 else
 		 {
-				printf("Éè±¸ID£º%s\n",sid);
+				printf("è®¾å¤‡IDï¼š%s\n",sid);
 		 }
 
-		 strncpy(msg, can_cache+11, ss);//ÌáÈ¡Êı¾İ
-		 printf("ÏûÏ¢ÄÚÈİ£º%s\n",msg);
+		 strncpy(msg, can_cache+11, ss);//æå–æ•°æ®
+		 printf("æ¶ˆæ¯å†…å®¹ï¼š%s\n",msg);
 		 
 
-		 strncpy(crs, can_cache+(12+ss), 10);//ÌáÈ¡CRCĞ£ÑéÂë
-		 printf("Ğ­ÒéCRCĞ£ÑéÂë£º%s\n",crs);
-		 long dd = atoi(crs);//×ª»»ÎªÕûĞÎ±äÁ¿ÓÃÓÚ½ÓÏÂÀ´µÄCRCĞ£Ñé
+		 strncpy(crs, can_cache+(12+ss), 10);//æå–CRCæ ¡éªŒç 
+		 printf("åè®®CRCæ ¡éªŒç ï¼š%s\n",crs);
+		 long dd = atoi(crs);//è½¬æ¢ä¸ºæ•´å½¢å˜é‡ç”¨äºæ¥ä¸‹æ¥çš„CRCæ ¡éªŒ
 
-		 int crcdouble = crc32(msg,strlen(msg));//ÏûÏ¢ÄÚÈİCRCĞ£ÑéÉú³É
-		 printf("ÏûÏ¢ÄÚÈİCRCĞ£ÑéÂë£º%010d\n",crc32(msg,strlen(msg)));
+		 int crcdouble = crc32(msg,strlen(msg));//æ¶ˆæ¯å†…å®¹CRCæ ¡éªŒç”Ÿæˆ
+		 printf("æ¶ˆæ¯å†…å®¹CRCæ ¡éªŒç ï¼š%010d\n",crc32(msg,strlen(msg)));
 		 if(dd == crcdouble)
 		 {
-				 printf("ÏûÏ¢ÄÚÈİĞ£ÑéÍ¨¹ı£¬Ğ­ÒéÕıÈ·£¡\n");
+				 printf("æ¶ˆæ¯å†…å®¹æ ¡éªŒé€šè¿‡ï¼Œåè®®æ­£ç¡®ï¼\n");
 		 }
 		 else
 		 {
-				 printf("ÏûÏ¢ÄÚÈİĞ£ÑéÊ§°Ü£¬ÇëÖØĞÂ´«Êä£¡\n");
+				 printf("æ¶ˆæ¯å†…å®¹æ ¡éªŒå¤±è´¥ï¼Œè¯·é‡æ–°ä¼ è¾“ï¼\n");
 		 }
 		 
-		 strncpy(eof, can_cache+(22+ss), 2);//ÌáÈ¡Ğ­ÒéÎ²
-		 printf("Ğ­ÒéÎ²£º%s\n",eof);
+		 strncpy(eof, can_cache+(22+ss), 2);//æå–åè®®å°¾
+		 printf("åè®®å°¾%s\n",eof);
 		 if(strcmp(eof,Deof)==0)
 		 {
-				printf("Ğ­Òé½áÊø£¡\n");
+				printf("åè®®ç»“æŸï¼\n");
 		 }
 		 else
 		 {
-				printf("Ğ­ÒéÎ²´íÎó£¡\n");
+				printf("åè®®å°¾é”™è¯¯ï¼\n");
 		 }
 	}
 	else
 	{
-			printf("´íÎó£¡²»ÊÇ±ê×¼µÄ Nymth Ğ­Òé£¡\n");
+			printf("é”™è¯¯ï¼ä¸æ˜¯æ ‡å‡†çš„ Nymth åè®®ï¼\n");
 	}
 	free(can_cache);
 	return 0;
 }		
 		
-int main()//Ö÷º¯Êı
+int main()//ä¸»å‡½æ•°
 {
   delay_init(168);
 	OLED_Init(); 
@@ -232,7 +232,7 @@ int main()//Ö÷º¯Êı
 	OLED_DrawBMP(0,0,128,8,BMP1);
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	
-	CAN1_Mode_Init(CAN_SJW_1tq,CAN_BS2_6tq,CAN_BS1_7tq,3,CAN_Mode_Normal); 
+	CAN1_Mode_Init(CAN_SJW_1tq,CAN_BS2_6tq,CAN_BS1_7tq,3,CAN_Mode_Normal); //canåè®®å‘é€æŒ‡ä»¤
 	u8 canbuf[8];
 	u8 Can_Send_Flag;
 	u8 can_i = 0;
@@ -297,7 +297,7 @@ int main()//Ö÷º¯Êı
     coreApi->sendPoll();
 		
 		
-		if(flag_testsend) //´¥·¢·¢ËÍ
+		if(flag_testsend) //è§¦å‘å‘é€
 		{
 			coreApi->sendToMobile(mobile_data_send, 21);
 			OLED_Clear();
@@ -318,7 +318,7 @@ int main()//Ö÷º¯Êı
 		}
 		
 		
-		if(flag_error_getDroneVersion)//´íÎóĞÅÏ¢
+		if(flag_error_getDroneVersion)//é”™è¯¯ä¿¡æ¯
 		{
 			OLED_ShowString(2,0,"Error:");
 			OLED_ShowString(2,2,"GetDroneVersion");
@@ -327,8 +327,6 @@ int main()//Ö÷º¯Êı
 		}
 		else
 		{
-			//OLED_Clear();
-			//OLED_ShowString(12,4,"Air Info");
 			OLED_ShowCHinese(0,0,14);
 			OLED_ShowCHinese(16,0,15);
 			OLED_ShowCHinese(32,0,16);
@@ -342,9 +340,9 @@ int main()//Ö÷º¯Êı
 			OLED_ShowString(64,6,"NO2:");
 		}
 		
-CANReserve:	
+CANReserve:	  //canæ¥æ”¶ä¿¡æ¯
 		can_key=CAN1_Receive_Msg(canbuf);
-		if(can_key)//½ÓÊÕµ½ÓĞÊı¾İ
+		if(can_key)//æ¥æ”¶åˆ°æœ‰æ•°æ®
 		{			
  			for(can_i=0;can_i<can_key;can_i++)
 			{									   				
@@ -356,11 +354,11 @@ CANReserve:
 						can_a++;
 						for(int w=-1;w<can_a;w++)
 						{
-							USART_SendData(USART2, can_cache[w]);//Ïò´®¿Ú1·¢ËÍÊı¾İ
-							while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);//µÈ´ı·¢ËÍ½áÊø
+							USART_SendData(USART2, can_cache[w]);//å‘ä¸²å£1å‘é€æ•°æ®
+							while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);//ç­‰å¾…å‘é€ç»“æŸ
 						}
 						can_a=0;
-						printf("\r\n");//²åÈë»»ĞĞ
+						printf("\r\n");//æ’å…¥æ¢è¡Œ
 						nymth();
 						goto CANReserve;
 					}
