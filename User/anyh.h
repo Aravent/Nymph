@@ -1,14 +1,14 @@
-#include "timer.h"
-#include <sys.h>
-#include <delay.h>
-#include <oled.h>
-#include <bmp.h>
-#include <anyh.h>
-#include <can.h>
-
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+
+#include <timer.h>
+#include <sys.h>
+#include <oled.h>
+
+#include <can.h>
+#include <delay.h>
+
 
 extern int flag_send;
 extern int flag_testsend;

@@ -11,9 +11,15 @@
 
 #include "DJI_API.h"
 #include <string.h>
+#include <anyh.h>
 
 using namespace DJI;
 using namespace DJI::onboardSDK;
+
+/*---------------AirDwing HX Switch-----------------------------------*/
+uint16_t Dyhx_Open[9]={0xFF, 0x01, 0x96, 0x40, 0x00, 0x00, 0x00, 0x00, 0x29};
+uint16_t Dyhx_Close[9]={0xFF, 0x01, 0x96, 0x41, 0x00, 0x00, 0x00, 0x00, 0x28};
+/*---------------AirDwing HX Switch-----------------------------------*/
 
 #ifdef USE_ENCRYPT
 uint8_t DJI::onboardSDK::encrypt = 1;
@@ -984,6 +990,7 @@ CoreAPI::sendToMobileCallback(CoreAPI* api, Header* protocolHeader,
 }
 
 //! Mobile Data Transparent Transmission Input Servicing
+//! 接收手机发送的信息并做简单解析
 void
 CoreAPI::parseFromMobileCallback(CoreAPI* api, Header* protocolHeader,
                                  UserData userData __UNUSED)
@@ -1179,6 +1186,30 @@ CoreAPI::parseFromMobileCallback(CoreAPI* api, Header* protocolHeader,
         break;
     }
   }
+	else
+	{
+		int mobile_data_len = protocolHeader->length - EXC_DATA_SIZE;
+		for(int ssd=0;ssd<(mobile_data_len-2);ssd++)
+		{
+		  mobile_data_t[ssd] = *((unsigned char*)protocolHeader + sizeof(Header) + (2 + ssd));
+		}
+		if(mobile_data_t[2]==8)//printf("OPEN");
+		{
+			for(int w=0;w<9;w++)
+			{
+				USART_SendData(USART2, Dyhx_Open[w]);//向串口1发送数据
+				while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);//等待发送结束
+			}
+		}
+    else if(mobile_data_t[2]==9)
+		{
+			for(int w=0;w<9;w++)
+			{
+				USART_SendData(USART2, Dyhx_Close[w]);//向串口1发送数据
+				while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);//等待发送结束
+			}
+		}
+	}
 }
 
 void
