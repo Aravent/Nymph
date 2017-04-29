@@ -122,103 +122,109 @@ uint32_t crc32(char *buf, uint32_t size)//CRC计算校验
 	return crc^0xFFFFFFFF;
 }			
 		
-int nymth()//Nymph协议解析封装
+int nymth()//Nymph协议解析封装 
+//char portal[32] = {0xFE,0x14,0xA2,0x00,0x00,0x00,0x12,0xFF,0x40,0x14,0x03,0xC8,0x00,0x22,0x00,0x78,0x00,0x37,0x00,0x18,0x00,0x20,0x02,0xA2,0x01,0x65,0xCE,0x11,0x11,0x11,0x11,0xFD};
 {
-	char stx[3],Dstx[3]="FE";
-	char len[4];
-	char sat[4],Dsat_1[4]="LOD",Dsat_2[4]="COR",Dsat_3[4]="SED",Dsat_4[4]="DIS",Dsat_5[4]="RES",Dsat_6[4]="RCO",Dsat_7[4]="CMD";
-	char sid[3],Dsid[3]="00";
-	char msg[255],crcmsg[255];
-	char crs[11];
-	char eof[3],Deof[3]="FD";
+	char stx = 0xFE;
+	int len;
+	char sat,Dsat_1=0xA0,Dsat_2=0xA1,Dsat_3=0xA2,Dsat_4=0xA3,Dsat_5=0xA4,Dsat_6=0xA5,Dsat_7=0xA6;
+	char sid;
+	char msg[255],crcmsg[4];
+	u32 crs;
+	char eof = 0xFD;
 	char data[512];
+	u32 crcdata32;
 	
-	strncpy(stx, can_cache, 2);//判断协议头
-	printf("协议头%s\n",stx);
-	if(strcmp(stx,Dstx)==0)
+	if(can_cache[0] == stx)
 	{
-		 strncpy(len, can_cache+2, 3);//提取数据长度
-		 printf("数据长度（字符串）：%s\n",len);
-		 long ss = atoi(len);//转换为整形变量用于接下来的字长计算
-		 printf("数据长度（整形）：%d\n",ss);
+		len = can_cache[1];//提取数据长度
+		printf("Data length(str):%d\n",len);
+		
+		sat = can_cache[2];//提取状态码
+		if(sat == Dsat_1)
+		{
+		 printf("State:Host start\n");//主机启动
+		}
+		else if(sat == Dsat_2)
+		{
+			 printf("State:Application control\n");//申请控制
+		}
+		else if(sat == Dsat_3)
+		{
+			 printf("State:Peripheral forwarding\n");//外设转发
+		}
+		else if(sat == Dsat_4)
+		{
+			 printf("State:Peripheral showing\n");//外设显示
+		}
+		else if(sat == Dsat_5)
+		{
+			 printf("State:Return register\n");//返回注册
+		}
+		else if(sat == Dsat_6)
+		{
+			 printf("State:Return control\n");//返回控制
+		}
+		else if(sat == Dsat_7)
+		{
+			 printf("State:Transmit control\n");//发送控制
+		}
+		else
+		{
+			 printf("State Error!\n");//状态码错误
+		}
 
-		 strncpy(sat, can_cache+5, 3);//提取状态码
-		 if(strcmp(sat,Dsat_1)==0)
-		 {
-				 printf("状态码：主机启动\n");
-		 }
-		 else if(strcmp(sat,Dsat_2)==0)
-		 {
-				 printf("状态码：申请控制\n");
-		 }
-		 else if(strcmp(sat,Dsat_3)==0)
-		 {
-				 printf("状态码：外设转发\n");
-		 }
-		 else if(strcmp(sat,Dsat_4)==0)
-		 {
-				 printf("状态码：外设显示\n");
-		 }
-		 else if(strcmp(sat,Dsat_5)==0)
-		 {
-				 printf("状态码：返回注册\n");
-		 }
-		 else if(strcmp(sat,Dsat_6)==0)
-		 {
-				 printf("状态码：返回控制\n");
-		 }
-		 else if(strcmp(sat,Dsat_7)==0)
-		 {
-				 printf("状态码：发送控制\n");
-		 }
-		 else
-		 {
-				 printf("状态码错误！\n");
-		 }
+    sid = can_cache[6];//提取设备ID
+		if(sid == 0x00)
+		{
+			printf("Peripheral ID:Host send\n");//主机发送
+		}
+		else
+		{
+			printf("Peripheral ID:%02X\n",sid);//设备ID
+		}
 
-		 strncpy(sid, can_cache+8, 2);//提取设备ID
-		 if(strcmp(sid,Dsid)==0)
-		 {
-				printf("设备ID：主机发送\n");
-		 }
-		 else
-		 {
-				printf("设备ID：%s\n",sid);
-		 }
+		printf("Message content:");//数据内容
+		for(int ts=0;ts<len;ts++)
+		{
+			msg[ts] = can_cache[7+ts];
+			printf("%02X ",can_cache[7+ts]);
+		}
+		printf("\n");
+		
+		printf("Protocol CRC check:");//提取CRC校验码
+		for(int crctq=0;crctq<4;crctq++)
+		{
+			crcmsg[crctq] = can_cache[len+7+crctq];
+			printf("%02X ",can_cache[len+7+crctq]);
+		}
+		printf("\n");
+		
+		crcdata32 = ((u32)crcmsg[0] << 24) | ((u32)crcmsg[1] << 16) | ((u32)crcmsg[2] << 8) | ((u32)crcmsg[3]);//合成CRC码
+    printf("Message content CRC01:%X\n",crcdata32);
+		
+		printf("Message content CRC check:%X\n",crc32(msg,strlen(msg)));//计算CRC码
+		if(crcdata32 == crc32(msg,strlen(msg)))//比对CRC码
+		{
+			printf("Check the message content, the protocol is correct!\n");
+		}
+		else
+		{
+			printf("Message content validation failed, please re - transfer!\n");
+		}
 
-		 strncpy(msg, can_cache+11, ss);//提取数据
-		 printf("消息内容：%s\n",msg);
-		 
-
-		 strncpy(crs, can_cache+(12+ss), 10);//提取CRC校验码
-		 printf("协议CRC校验码：%s\n",crs);
-		 long dd = atoi(crs);//转换为整形变量用于接下来的CRC校验
-
-		 int crcdouble = crc32(msg,strlen(msg));//消息内容CRC校验生成
-		 printf("消息内容CRC校验码：%010d\n",crc32(msg,strlen(msg)));
-		 if(dd == crcdouble)
-		 {
-				 printf("消息内容校验通过，协议正确！\n");
-		 }
-		 else
-		 {
-				 printf("消息内容校验失败，请重新传输！\n");
-		 }
-		 
-		 strncpy(eof, can_cache+(22+ss), 2);//提取协议尾
-		 printf("协议尾%s\n",eof);
-		 if(strcmp(eof,Deof)==0)
-		 {
-				printf("协议结束！\n");
-		 }
-		 else
-		 {
-				printf("协议尾错误！\n");
-		 }
+		if(can_cache[len+11]==eof)//校验协议尾
+		{
+			printf("End of protocol!\n");
+		}
+		else
+		{
+			printf("Protocol error!\n");
+		}
 	}
 	else
 	{
-			printf("错误！不是标准的 Nymth 协议！\n");
+		printf("Error ! Not standard Nymth protocol!\n");
 	}
 	free(can_cache);
 	return 0;
@@ -242,7 +248,7 @@ int main()//主函数
 	
 	u8 flag_new=0;
 	char c1='F';
-	char c2='D';
+	char c2 = 0xFD;
 	
 	
 	BSPinit();
@@ -250,11 +256,11 @@ int main()//主函数
   printf("\rAirDwing Nymph v1.1 \r\n");
   printf("http://www.airdwing.com \r\n");
   delay_nms(3000);
-	delay_nms(3000);
-	delay_nms(3000);
-	delay_nms(3000);
-	delay_nms(3000);
-	delay_nms(3000);
+	//delay_nms(3000);
+	//delay_nms(3000);
+	//delay_nms(3000);
+	//delay_nms(3000);
+	//delay_nms(3000);
 	OLED_Clear();
 
   uint32_t runOnce = 1;
@@ -347,27 +353,28 @@ CANReserve:	  //can接收信息
  			for(can_i=0;can_i<can_key;can_i++)
 			{									   				
 				can_cache[can_a]=canbuf[can_i];			
-				if(flag_new)
-				{
+				//if(flag_new)
+				//{
 					if(c2==canbuf[can_i])
 					{
 						can_a++;
-						for(int w=-1;w<can_a;w++)
-						{
-							USART_SendData(USART2, can_cache[w]);//向串口1发送数据
-							while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);//等待发送结束
-						}
+//						for(int w=-1;w<can_a;w++)
+//						{
+//							USART_SendData(USART2, can_cache[w]);//向串口1发送数据
+//							while(USART_GetFlagStatus(USART2,USART_FLAG_TC)!=SET);//等待发送结束
+//						}
 						can_a=0;
 						printf("\r\n");//插入换行
 						nymth();
 						goto CANReserve;
 					}
-					else
-						flag_new=0;
-				}
-				if(c1==canbuf[can_i])flag_new=1;
+					//else
+						//flag_new=0;
+				//}
+				//if(c1==canbuf[can_i])flag_new=1;
 				can_a++;
 			}
+			//USART_RX_STA=0;
 		}
   }
 }
