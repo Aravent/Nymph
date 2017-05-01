@@ -457,6 +457,7 @@ CoreAPI::activate(ActivateData* data, CallBack callback, UserData userData)
   if (versionData.fwVersion == 0)
   {
     API_LOG(serialDevice, ERROR_LOG, "Please call getDroneVersion first.\n");
+		flag_error_getDroneVersion = 1;
     return;
   }
   data->version        = versionData.fwVersion;

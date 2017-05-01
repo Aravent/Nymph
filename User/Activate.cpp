@@ -19,10 +19,10 @@ extern FlightData flightData;
 void
 User_Activate ()
 {
-  static char key_buf[65] = "abc"; /*"your app_key"*/
+  static char key_buf[65] = "6e356224a9b11f8e5e15a7a847d9b952a119163831d82c6bd2bba202a34c5191"; /*"your app_key"*/
 
   ActivateData user_act_data;
-  user_act_data.ID = 1234; /*need your key in number like: 111000*/
+  user_act_data.ID = 1037794; /*need your key in number like: 111000*/
 
 
   //! Change the version string to your platform/version as defined in DJI_Version.h

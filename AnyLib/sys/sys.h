@@ -1,6 +1,10 @@
 #ifndef __SYS_H
-#define __SYS_H	 
+#define __SYS_H	
+	
 #include "stm32f4xx.h" 
+#include "stm32f4xx_sdio.h"
+#include "stm32f4xx_rcc.h"
+#include "stm32f4xx_spi.h"
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
 //ALIENTEK STM32F407开发板
@@ -85,5 +89,13 @@ void INTX_DISABLE(void);//关闭所有中断
 void INTX_ENABLE(void);	//开启所有中断
 void MSR_MSP(u32 addr);	//设置堆栈地址 
 #endif
+
+
+
+
+
+
+
+
 
 

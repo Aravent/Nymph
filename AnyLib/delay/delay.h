@@ -1,5 +1,11 @@
 #ifndef __DELAY_H
-#define __DELAY_H 			   
+#define __DELAY_H 	
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif //__cplusplus
+
 #include "sys.h"
 //********************************************************************************
 //V1.2ÐÞ¸ÄËµÃ÷
@@ -25,6 +31,8 @@ void delay_us(u32 nus);
 
 #endif
 
-
+#ifdef __cplusplus
+}
+#endif //__cplusplus
 
 

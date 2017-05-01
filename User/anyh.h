@@ -8,7 +8,9 @@
 
 #include <can.h>
 #include <delay.h>
+#include <pwm.h>
 
+#include "sdio_sdcard.h"
 
 extern int flag_send;
 extern int flag_testsend;

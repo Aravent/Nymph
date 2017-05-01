@@ -58,6 +58,12 @@
 ".\objects\sdio_sdcard.o"
 ".\objects\spi.o"
 ".\objects\w25qxx.o"
+".\objects\exfuns.o"
+".\objects\fattester.o"
+".\objects\diskio.o"
+".\objects\ff.o"
+".\objects\cc936.o"
+".\objects\malloc.o"
 "E:\Keil_v5\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Lib\ARM\arm_cortexM4lf_math.lib"
 --library_type=microlib --strict --scatter ".\Objects\Nymph.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
