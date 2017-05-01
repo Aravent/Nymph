@@ -453,6 +453,11 @@
               <FileType>8</FileType>
               <FilePath>..\User\LocalNavigation.cpp</FilePath>
             </File>
+            <File>
+              <FileName>log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\log.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

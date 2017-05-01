@@ -7,6 +7,8 @@
 #include "anyh.h"
 #include "bmp.h"//引用图像文件
 
+#include "log.h"
+
 
 #undef USE_ENCRYPT
 /*-----------------------DJI_LIB VARIABLE-----------------------------*/
@@ -46,6 +48,12 @@ int o3;
 int no2;
 int pm25;
 int pm10;
+
+
+FIL fil;
+FRESULT res;
+UINT bww;
+
 		
 //CRC码表
 static const uint32_t crc32tab[] = {
@@ -283,6 +291,9 @@ int main()//主函数
 	OLED_Init(); 
 	OLED_Clear();
 	OLED_DrawBMP(0,0,128,8,BMP1);
+	
+	//my_mem_init(SRAMCCM);		//初始化CCM内存池
+	
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	
 	CAN1_Mode_Init(CAN_SJW_1tq,CAN_BS2_6tq,CAN_BS1_7tq,3,CAN_Mode_Normal); //can协议发送指令
@@ -302,7 +313,11 @@ int main()//主函数
 	u8 h=0;
 	u8 len;
 	///////////////////////////////
-	
+	u32 total,free;
+	u8 dddd[] = "0";
+	//unsigned char dddd = "0";
+	u8 ssss[] = "0:/xzl.txt";
+	u8 t=0;
 	
 	BSPinit();
   delay_nms(30);
@@ -318,6 +333,49 @@ int main()//主函数
 
   uint32_t runOnce = 1;
   uint32_t next500MilTick;
+	
+	my_mem_init(SRAMCCM);		//初始化CCM内存池
+	
+	while(SD_Init())//检测不到SD卡
+	{
+		printf("SD Card Error!\n");
+    OLED_ShowString(0,4,"No SD Card");
+	}
+	
+	exfuns_init();							//为fatfs相关变量申请内存				 
+  f_mount(fs[0],"0:",1); 					//挂载SD卡 											    	  
+	while(exf_getfree(dddd,&total,&free))	//得到SD卡的总容量和剩余容量
+	{
+		printf("SD Card Fatfs Error!\n");
+		delay_ms(200);
+		delay_ms(200);
+	}													  			         
+  printf("FATFS OK!\n");
+	printf("SD Total Size:%d MB\n",total>>10);
+  printf("SD Free Size:%d MB\n",free>>10);
+
+  //mf_open("0:/xzl.txt",0x08);ssss
+	//mf_open(ssss,0x08);
+	
+	res = f_open(&fil,"0:/dd.txt",FA_CREATE_ALWAYS|FA_WRITE);
+	
+	if(res == 0)printf("Buid Susses\n");	
+	
+	f_write(&fil,"Anycen",20,&bww);
+	
+	f_close(&fil);
+	
+	printf("Buid 1231.txt\n");	
+	while(1)
+	{
+		t++; 
+		delay_ms(200);		 			   
+	}	
+	
+	//OLED_Clear();
+	
+	//filelog();
+	
   while (1)
   {
     // One time automatic activation

@@ -8,6 +8,7 @@
 ".\objects\driver.o"
 ".\objects\mobilecommand.o"
 ".\objects\localnavigation.o"
+".\objects\log.o"
 ".\objects\bspusart.o"
 ".\objects\bsp.o"
 ".\objects\timer.o"

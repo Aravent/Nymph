@@ -197,6 +197,10 @@ void UsartConfig()
   USARTxNVIC_Config();
 }
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif //__cplusplus
 void USART1_IRQHandler(void)                	//串口1中断服务程序
 {
 	u8 Res;
@@ -224,6 +228,9 @@ void USART1_IRQHandler(void)                	//串口1中断服务程序
 		}   		 
   } 
 } 
+#ifdef __cplusplus
+}
+#endif //__cplusplus
 
 #ifdef __cplusplus
 extern "C"
